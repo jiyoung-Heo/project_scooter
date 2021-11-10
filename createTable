@@ -1,0 +1,170 @@
+CREATE TABLE users
+(
+    id VARCHAR2(15) PRIMARY KEY,
+    pwd VARCHAR2(15),
+    name VARCHAR2(10),
+    phone VARCHAR2(15),
+    currentMoney NUMBER(10)
+);
+
+insert into users(id,pwd,name,phone) values('admin','admin1234','관리자','010-0000-0000');
+insert into users(id,pwd,name,phone) values('test','test1234','홍길동','010-111-1111');
+commit;
+
+CREATE TABLE scooters
+(
+    num NUMBER(3) PRIMARY KEY,
+    isborrow varchar2(10)
+);
+
+CREATE TABLE transactionList
+(
+    num Number(3) primary key,
+    id VARCHAR2(15) REFERENCES users(id),
+    scooterNum REFERENCES scooters(num),
+    paymentType Varchar2(10),
+    payment NUMBER(10)
+);
+create sequence transList;
+
+CREATE TABLE borrowlist
+(
+    id VARCHAR2(15) REFERENCES users(id),
+    num NUMBER(3) REFERENCES scooters(num) primary key,
+    time NUMBER(5),
+    startTime varchar2(20),
+    endtime varchar2(20),
+    islate char(1),
+    isreturned char(1)
+);
+delete from borrowlist where num = 1;
+drop table borrowlist;
+rollback;
+
+select* from users;
+select* from scooters;
+select* from transactionList;
+select* from borrowlist;
+
+delete from borrowlist;
+delete from transactionList;
+delete from scooters;
+delete from users;
+
+**재복사
+CREATE TABLE users
+(
+    id VARCHAR2(15) PRIMARY KEY,
+    pwd VARCHAR2(15),
+    name VARCHAR2(10),
+    phone VARCHAR2(15),
+    currentMoney NUMBER(10)
+);
+
+insert into users(id,pwd,name,phone) values('admin','admin1234','관리자','010-0000-0000');
+insert into users(id,pwd,name,phone) values('test','test1234','홍길동','010-111-1111');
+commit;
+
+CREATE TABLE scooters
+(
+    num NUMBER(3) PRIMARY KEY,
+    isborrow varchar2(10)
+);
+
+CREATE TABLE transactionList
+(
+    num Number(3) primary key,
+    id VARCHAR2(15) REFERENCES users(id),
+    scooterNum REFERENCES scooters(num),
+    paymentType Varchar2(10),
+    payment NUMBER(10)
+);
+create sequence transList;
+
+CREATE TABLE borrowList
+(
+    id VARCHAR2(15) REFERENCES users(id),
+    num NUMBER(3) REFERENCES scooters(num) primary key,
+    time VARCHAR2(10),
+    startTime varchar2(20),
+    endTime varchar2(20),
+    isLate char(1),
+    isreturned char(1)
+);
+delete from borrowlist where num = 1;
+insert into borrowlist(id,num,time,startTime,endTime) values('test',1,1,'2021-04-22 11:11:11','2021-04-22 11:22:11');
+
+rollback;
+select to_date((to_date(endTime,'yyyy-mm-dd hh24:mi:ss')-to_date(startTime,'yyyy-mm-dd hh24:mi:ss'))*24*60*60,'yyyy-mm-dd hh24:mi:ss') from borrowList where num = 1; --킥보드탄시간구하는거
+
+select (to_date(endTime,'yyyy-mm-dd hh24:mi:ss')-to_date(startTime,'yyyy-mm-dd hh24:mi:ss'))*24*60 from borrowList where num = 1; --킥보드탄시간구하는거
+
+select (to_date(endTime,'yyyy-mm-dd hh24:mi:ss')-to_date(startTime,'yyyy-mm-dd hh24:mi:ss'))*24*60-time from borrowList where num = 1; --연체시간구하기
+select time from borrowList where num = 1;
+select to_date(endTime-startTime,'yyyy-mm-dd hh24:mi:ss') from borrowList where num = 1;
+
+select to_char(sysdate-to_date(startTime,'yyyy-mm-dd hh24:mi:ss')) from borrowList  where num= 1;
+
+select * from borrowList where num = 1 and
+to_date(startTime,'yyyy-mm-dd hh24:mi:ss')+(interval '10' minute)< to_date(endTime,'yyyy-mm-dd hh24:mi:ss');
+
+select * from borrowList where num = 1 and
+(select (to_date(endTime,'yyyy-mm-dd hh24:mi:ss')-to_date(startTime,'yyyy-mm-dd hh24:mi:ss'))*24*60 from borrowList where num = 1) > time ;
+
+select time from borrowList where num = 1; 
+
+select c.num,c.isborrow,b.id,b.time from  borrowlist b right outer join scooters c  on b.num=c.num;
+select * from borrowList where to_date(select to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') from dual) -to_date(startTime,'yyyy-mm-dd hh24:mi:ss')>time;
+
+select* from users;
+select* from scooters;
+select* from transactionList;
+select* from borrowlist;
+
+commit;
+delete from borrowlist;
+delete from transactionList;
+delete from scooters;
+delete from users;
+drop table borrowlist;
+drop table transactionList;
+drop table scooters;
+drop table users;
+
+
+**4.23**
+CREATE TABLE users
+(
+    id VARCHAR2(15) PRIMARY KEY,
+    pwd VARCHAR2(15),
+    name VARCHAR2(10),
+    phone VARCHAR2(15),
+    currentMoney NUMBER(10)
+);
+
+CREATE TABLE scooters
+(
+    num NUMBER(3) PRIMARY KEY,
+    isborrow varchar2(20)
+);
+
+CREATE TABLE transactionList
+(
+    justcount Number(3) references borrowlist(justcount),
+    id VARCHAR2(15) REFERENCES users(id),
+    scooterNum REFERENCES scooters(num),
+    paymentType Varchar2(10),
+    payment NUMBER(10)
+);
+
+CREATE TABLE borrowList
+(
+    justcount number(3) primary key,
+    id VARCHAR2(15) REFERENCES users(id),
+    num NUMBER(3) REFERENCES scooters(num),
+    time VARCHAR2(10),
+    startTime varchar2(20),
+    endTime varchar2(20),
+    isLate char(1),
+    isreturned char(1)
+);
